@@ -1,40 +1,23 @@
-# aiap-portfolio
-ML Project
+# Churn Prediction Project
 
-# AIAP Retention Prediction Project
+## Overview
+ML pipeline to predict customer churn using Logistic Regression, Random Forest, and XGBoost.
 
-## 📌 Problem Statement
-xxx
+## How to run
+```bash
+bash run.sh
+```
 
-## 📊 Dataset
-To be updated.
+## Pipeline Steps
 
-## 🧠 Approach
-- Data cleaning and preprocessing
-- Feature engineering
-- Supervised machine learning model
-- Model evaluation
+- Data loading  
+- Preprocessing  
+- Train-test split  
+- Imputation  
+- Model training  
+- Threshold tuning (recall ≥ 0.8)  
+- Evaluation  
 
-## 🔧 Features
-- Time to first purchase
-- Purchase frequency
-- Recency of last purchase
-- Total orders
+## Final Model
 
-## 🤖 Models
-- Logistic Regression
-- Random Forest
-
-## 📈 Evaluation Metrics
-- Accuracy
-- Precision
-- Recall
-- AUC
-
-## 🚀 How to Run
-To be updated in Week 2
-
-## 📁 Project Structure
-- data/: raw data
-- notebooks/: EDA
-- src/: pipeline code
+Random Forest selected based on best precision-recall trade-off under recall constraint.
