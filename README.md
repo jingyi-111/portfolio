@@ -78,6 +78,20 @@ RECALL_TARGET = 0.8
 | Binary features | Gender | Label encoding (Female=0, Male=1) |
 | Identifier | CustomerID | Dropped from model |
 
+
+## Model Selection
+
+- Logistic Regression
+   - Served as a baseline model for performance benchmark due to its simplicity and interpretability, assuming a linear relationship between features and churn probability
+
+- Random Forest
+   - Selected as a non-linear tree-based model that performs well on imbalanced dataset
+   - Ability to capture complex feature interactions without requiring feature scaling
+
+- XGBoost 
+   - Used as an advanced boosting model to evaluate potential performance improvement beyond Random Forest and to assess the upper bound of model performance
+
+
 ## Final Model
 
 Random Forest selected based on best precision-recall trade-off under recall constraint.
