@@ -57,12 +57,26 @@ RECALL_TARGET = 0.8
 
 
 ## EDA Insights & Feature Engineering Decisions
-- Early tenure users display the highest churn risk, with tenure showing the strongest negative relation with churn. Based on this, Tenure was treated as a key predictive feature where missing values were imputed using City Tier median as median to preserve segment-level behavioural differences
-  
-- Complaint behaviour is a strong churn driver with users who lodged complaints exhibiting approximately 3x higher churn compared to those without complaints. This feature was retained as a key signal in the model without transformation
+- Early tenure users display the highest churn risk, with tenure showing the strongest negative relation with churn
+   - Tenure was treated as a key predictive feature where missing values were imputed using City Tier median as median to preserve segment-level behavioural differences
+     
+- Complaint behaviour is a strong churn driver with users who lodged complaints exhibiting approximately 3x higher churn compared to those without complaints
+   - Feature was retained as a key signal in the model without transformation
 
-- Cash payment has the highest churn rate of 25% indicating potential payment friction compared to other payment methods. To reduce category fragmentation and improve model stability, payment modes were grouped into 3 broader categories during preprocessing
+- Cash payment has the highest churn rate of 25% indicating potential payment friction compared to other payment methods
+   - Payment modes were grouped into 3 broader categories during preprocessing to reduce category fragmentation and improve model stability
 
+
+## Feature Processing Summary
+
+| Feature Group | Examples | Processing |
+|---------------|----------|------------|
+| Missing values | Tenure, WarehouseToHome, HourSpendOnApp, OrderAmountHikeFromlastYear, CouponUsed, OrderCount, DaySinceLastOrder | Median imputation, scaling for Logistic Regression |
+| Engineered features | PaymentMode | Grouped into 3 categories (Card, Digital & Cash) for stability |
+| Numerical features | NumberOfDeviceRegistered, NumberOfAddress, CashbackAmount | Scaling for Logistic Regression |
+| Categorical features | PreferredLoginDevice, PreferredPaymentMode, PreferedOrderCat, MaritalStatus | One-hot encoding |
+| Binary features | Gender | Label encoding (Female=0, Male=1) |
+| Identifier | CustomerID | Dropped from model |
 
 ## Final Model
 
