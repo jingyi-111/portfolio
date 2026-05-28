@@ -5,7 +5,7 @@ This project applies exploratory data analysis (EDA) and machine learning techni
 
 
 ## Objective
-To identify users with high churn risk so that the business can proactively deploy targeted retention strategies to improve user retention and optimise customer lifetime value.
+To identify users with high churn risk so that the business can proactively deploy targeted retention strategies to improve user retention, optimise customer lifetime value and control unnecessasry retention cost.
 
 
 ## Folder Structure
@@ -37,7 +37,7 @@ bash run.sh
 #### Parameters
 The recall threshold for tuning can be modified in `train.py`:
 ```
-RECALL_TARGET = 0.8
+RECALL_TARGET = 0.81
 ```
 
 ## Pipeline Flow
@@ -50,7 +50,7 @@ RECALL_TARGET = 0.8
 - Model training
 - Prediction & Probabilities
 - Baseline evaluation
-- Threshold tuning (recall ≥ 0.8)  
+- Threshold tuning (recall ≥ 0.81)  
 - Post tuning evaluation
 - ROC-AUC comparison
 - Final model selection
@@ -92,6 +92,43 @@ RECALL_TARGET = 0.8
    - Used as an advanced boosting model to evaluate potential performance improvement beyond Random Forest and to assess the upper bound of model performance
 
 
-## Final Model
+## Model Evaluation
 
-Random Forest selected based on best precision-recall trade-off under recall constraint.
+Model performance was evaluated using the following metrics:
+
+- Precision: Measures how many predicted churn users were actually churners  
+- Recall: Measures how many actual churn users were correctly identified  
+- F1-score: Harmonic mean of precision and recall, balancing both objectives  
+- ROC-AUC: Measures the model’s ability to distinguish between churn and non-churn users
+
+Given the business objective of identifying churn users while controlling retention costs, recall was prioritised during threshold tuning. A recall threshold of ≥ 0.81 was set based on baseline performance observed from Logistic Regression, ensuring that subsequent models meet or exceed this minimum recall level.
+
+### Results Summary
+
+#### Pre-Tuning Performance Summary
+
+| Model | Precision | Recall | F1-score | ROC-AUC |
+|-------|-----------|--------|----------|---------|
+| Logistic Regression | 0.44 | 0.81 | 0.57 | 0.88 |
+| Random Forest | 0.95 | 0.79 | 0.86 | 0.99 |
+| XGBoost | 0.91 | 0.82 | 0.87 | 0.99 |
+
+#### Post-Tuning Performance Summary
+| Model | Precision | Recall | F1-score | Threshold |
+|-------|-----------|--------|----------|---------|
+| Logistic Regression | 0.45 | 0.81 | 0.58 | 0.50 |
+| Random Forest | 0.94 | 0.82 | 0.88 | 0.47 |
+| XGBoost | 0.92 | 0.81 | 0.86 | 0.51 |
+
+<img width="589" height="451" alt="Screenshot 2026-05-28 at 1 14 32 PM" src="https://github.com/user-attachments/assets/a7142ae0-eaab-414a-ba77-cc2cecc4b750" />
+
+#### Key Insights
+
+- All models achieved strong ROC-AUC scores (0.88–0.99), indicating good class separability between churn and non-churn users
+- Tree-based models (Random Forest and XGBoost) consistently outperformed Logistic Regression in overall predictive performance
+- After threshold tuning (recall ≥ 0.81), Random Forest achieved the best balance between precision (0.94) and recall (0.82), consistent with the precision-recall trade-off observed in the Precision-Recall Curve
+  
+
+### Final Model Selection
+
+Random Forest was selected as the final model due to its strong precision-recall trade-off, making it the most suitable model for churn identification under the business constraint.
