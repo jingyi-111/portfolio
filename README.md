@@ -133,4 +133,28 @@ Given the business objective of identifying churn users while controlling retent
 Random Forest was selected as the final model as it achieved the best balance between precision (0.94) and recall (0.82) after threshold tuning, making it the most suitable model for churn identification under the business constraint.
 
 
+## Key Churn Drivers
 
+Key churn drivers were identified using feature importance from the final Random Forest model, supported by exploratory data analysis insights.
+
+These drivers can be grouped into behavioural and operational factors:
+
+### Behavioural Drivers
+- **Tenure**: Approximately 50% of users with tenure of 1 month or below exhibit high churn risk, indicating weaker retention among new users and highlighting early lifecycle engagement gaps
+- **Cashback Amount**: Users with cashback ≥ 150 show ~50% lower churn rate compared to lower cashback users, suggesting a strong association between incentive engagement and retention
+- **Complaint Behaviour**: Users with complaints show approximately 3x higher churn risk, indicating product & service experience as a key retention factor
+- **Days Since Last Order**: 37% of churned users had their last order within 0–1 days prior to churn, suggesting churn can occur shortly after recent engagement rather than only after long inactivity
+
+### Operational Drivers
+- **Warehouse-to-Home Distance**: Churn risk is higher in the 20-30km, suggesting logistics factors may be associated with user retention
+
+
+## Recommendations
+
+- Strengthen early lifecycle engagement by targeting new users within the first month of sign-up with personalised communications based on purchase preference to improve activation and retention
+
+- Improve post-purchase experience by sending follow-up communications such as product usage guidance and support information to help users better navigate issues, potentially reducing complaint-related churn risk
+
+- Optimise incentive strategy by targeting high churn-risk users with tailored cashback campaigns to encourage repeat engagement and improve retention
+
+- Monitor and improve delivery experience in mid-distance zones (approximately 20–30km from warehouse) where higher churn risk is observed to better understand and address potential service friction
