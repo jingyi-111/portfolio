@@ -126,9 +126,13 @@ Given the business objective of identifying churn users while controlling retent
 
 - All models achieved strong ROC-AUC scores (0.88–0.99), indicating good class separability between churn and non-churn users
 - Tree-based models (Random Forest and XGBoost) consistently outperformed Logistic Regression in overall predictive performance
-- After threshold tuning (recall ≥ 0.81), Random Forest achieved the best balance between precision (0.94) and recall (0.82), consistent with the precision-recall trade-off observed in the Precision-Recall Curve
-  
+- Random Forest demonstrated a more balanced precision-recall trade-off as observed from the Precision-Recall curve while XGBoost showed stronger performance prior to tuning
+- Threshold tuning was applied on all models using the same recall constraint to optimise churn detection performance and to ensure a fair comparison
+
 
 ### Final Model Selection
 
-Random Forest was selected as the final model due to its strong precision-recall trade-off, making it the most suitable model for churn identification under the business constraint.
+Random Forest was selected as the final model as it achieved the best balance between precision (0.94) and recall (0.82) after threshold tuning, making it the most suitable model for churn identification under the business constraint.
+
+
+
