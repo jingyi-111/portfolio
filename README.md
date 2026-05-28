@@ -146,7 +146,7 @@ These drivers can be grouped into behavioural and operational factors:
 - **Days Since Last Order**: 37% of churned users had their last order within 0–1 days prior to churn, suggesting churn can occur shortly after recent engagement rather than only after long inactivity
 
 ### Operational Drivers
-- **Warehouse-to-Home Distance**: Churn risk is higher in the 20-30km, suggesting logistics factors may be associated with user retention
+- **Warehouse-to-Home Distance**: Churn risk is higher in the 20-30km range, suggesting logistics factors may be associated with user retention
 
 
 ## Recommendations
