@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, confusion_matrix, classification_report, roc_curve, f1_score, precision_recall_curve
+from sklearn.metrics import roc_auc_score, classification_report, roc_curve, precision_recall_curve
 from sklearn.model_selection import train_test_split
 
 import warnings
@@ -22,161 +22,154 @@ warnings.filterwarnings("ignore")
 
 
 # =========================
-# 1. LOAD DATA
+# 1. CONFIGURATION
 # =========================
 
-df = pd.read_excel('Dataset/E Commerce Dataset.xlsx',sheet_name='E Comm')
+DATA_PATH = 'Dataset/E Commerce Dataset.xlsx'
+SHEET_NAME = 'E Comm'
 
+TEST_SIZE = 0.3
+RANDOM_STATE = 42
+RECALL_TARGET = 0.81
 
-# =========================
-# 2. PREPROCESSING
-# =========================
-
-target = "Churn"
-df_model = df.drop(columns='CustomerID')
-
-
-df_model['PreferredLoginDevice'] = df_model['PreferredLoginDevice'].replace('Phone','Mobile Phone')
-
-df_model['PreferredPaymentMode'] = df_model['PreferredPaymentMode'].replace({
-    'CC':'Card',
-    'COD':'Cash',
-    'Cash on Delivery':'Cash',
-    'Credit Card':'Card',
-    'Debit Card':'Card',
-    'E wallet':'Digital',
-    'UPI':'Digital'
-})
-
-df_model['PreferedOrderCat'] = df_model['PreferedOrderCat'].replace('Mobile','Mobile Phone')
-
-
-df_model = pd.get_dummies(df_model,columns=['PreferredLoginDevice','PreferredPaymentMode','PreferedOrderCat','MaritalStatus'],drop_first=True)
-
-gender_map = {'Female':0,'Male':1}
-df_model['Gender'] = df_model['Gender'].map(gender_map)
-
-
-X = df_model.drop(columns=target,axis=1)
-y = df_model[target]
+TARGET = "Churn"
 
 
 # =========================
-# 3. TRAIN TEST SPLIT
+# 2. LOAD DATA
 # =========================
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+def load_data(): 
 
-
-# =========================
-# 4. IMPUTATION
-# =========================
-
-null_values = df_model.isnull().mean()
-null_values_cols = null_values[null_values > 0].index
-
-
-city_median = X_train.groupby('CityTier')['Tenure'].median()
-
-X_train['Tenure'] = X_train['Tenure'].fillna(
-    X_train['CityTier'].map(city_median))
-
-X_test['Tenure'] = X_test['Tenure'].fillna(
-    X_test['CityTier'].map(city_median))
-
-null_values_cols = null_values_cols.drop('Tenure')
-
-
-num_imputer = SimpleImputer(strategy='median')
-X_train[null_values_cols] = num_imputer.fit_transform(X_train[null_values_cols])
-X_test[null_values_cols] = num_imputer.transform(X_test[null_values_cols])
+	return pd.read_excel(DATA_PATH, sheet_name= SHEET_NAME)
 
 
 # =========================
-# 5. SCALING (for Logistic Regression only)
+# 3. PREPROCESSING
 # =========================
 
-sc = StandardScaler()
+def preprocess(df):
 
-X_train_scaled = X_train.copy()
-X_test_scaled = X_test.copy()
+	# Drop identifier
+	df_model = df.drop(columns='CustomerID')
+	
+	# Standardise categories
+	df_model['PreferredLoginDevice'] = df_model['PreferredLoginDevice'].replace('Phone','Mobile Phone')
+	df_model['PreferedOrderCat'] = df_model['PreferedOrderCat'].replace('Mobile','Mobile Phone')
+	
+	# Grouped categories
+	df_model['PreferredPaymentMode'] = df_model['PreferredPaymentMode'].replace({
+    	'CC':'Card',
+    	'COD':'Cash',
+    	'Cash on Delivery':'Cash',
+    	'Credit Card':'Card',
+    	'Debit Card':'Card',
+    	'E wallet':'Digital',
+    	'UPI':'Digital'
+	})
 
-sc_col = ['Tenure', 'WarehouseToHome', 'HourSpendOnApp',
-       'NumberOfDeviceRegistered', 'NumberOfAddress',
-       'OrderAmountHikeFromlastYear', 'CouponUsed', 'OrderCount',
-       'DaySinceLastOrder', 'CashbackAmount']
+	# One-hot encoding
+	df_model = pd.get_dummies(df_model, columns=['PreferredLoginDevice','PreferredPaymentMode','PreferedOrderCat','MaritalStatus'],drop_first=True)
 
-X_train_scaled[sc_col] = sc.fit_transform(X_train_scaled[sc_col])
-X_test_scaled[sc_col] = sc.transform(X_test_scaled[sc_col])
+	# Label encoding
+	gender_map = {'Female':0,'Male':1}
+	df_model['Gender'] = df_model['Gender'].map(gender_map)	
+
+	return df_model
 
 
 # =========================
-# 6. DEFINE MODELS
+# 4. TRAIN TEST SPLIT
 # =========================
 
-lr = LogisticRegression(class_weight='balanced',random_state=42)
+def split_data(df):
 
-rf = RandomForestClassifier(random_state=42,class_weight='balanced')
+	X = df.drop(columns=TARGET,axis=1)
+	y = df[TARGET]
 
-xgb = XGBClassifier(
+	return train_test_split(X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y)
+
+
+# =========================
+# 5. IMPUTATION & SCALING
+# =========================
+
+def impute_and_scale(df, X_train, X_test):
+
+	null_values = df.isnull().mean()
+	null_values_cols = null_values[null_values > 0].index
+
+	# Tenure imputation by city tier
+	city_median = X_train.groupby('CityTier')['Tenure'].median()
+
+	X_train = X_train.copy()
+	X_test = X_test.copy()
+
+	X_train['Tenure'] = X_train['Tenure'].fillna(X_train['CityTier'].map(city_median))
+
+	X_test['Tenure'] = X_test['Tenure'].fillna(X_test['CityTier'].map(city_median))
+
+	null_values_cols = null_values_cols.drop('Tenure')
+
+	# Imputation for remaining missing values
+	num_imputer = SimpleImputer(strategy='median')
+	X_train[null_values_cols] = num_imputer.fit_transform(X_train[null_values_cols])
+	X_test[null_values_cols] = num_imputer.transform(X_test[null_values_cols])
+
+
+	# Scaling for Logistic Regression only
+	sc = StandardScaler()
+
+	X_train_scaled = X_train.copy()
+	X_test_scaled = X_test.copy()
+
+	sc_col = ['Tenure', 'WarehouseToHome', 'HourSpendOnApp',
+       	'NumberOfDeviceRegistered', 'NumberOfAddress',
+       	'OrderAmountHikeFromlastYear', 'CouponUsed', 'OrderCount',
+       	'DaySinceLastOrder', 'CashbackAmount']
+
+	X_train_scaled[sc_col] = sc.fit_transform(X_train_scaled[sc_col])
+	X_test_scaled[sc_col] = sc.transform(X_test_scaled[sc_col])
+
+	return X_train, X_test, X_train_scaled, X_test_scaled
+
+
+# =========================
+# 6. TRAIN MODELS
+# =========================
+
+def train_models(X_train, X_train_scaled, y_train):
+	
+	models = {}
+
+	models['logistic_regression'] = LogisticRegression(class_weight='balanced', random_state=RANDOM_STATE)
+
+	models['random_forest'] = RandomForestClassifier(random_state=RANDOM_STATE, class_weight='balanced')
+
+	models['xgboost'] = XGBClassifier(
     n_estimators=200,
     learning_rate=0.1,
     max_depth=5,
     subsample=0.8,
     colsample_bytree=0.8,
-    random_state=42,
+    random_state=RANDOM_STATE,
     eval_metric='logloss'
 )
 
+	models['logistic_regression'].fit(X_train_scaled,y_train)
 
-# =========================
-# 7. TRAIN MODELS
-# =========================
+	models['random_forest'].fit(X_train,y_train)
 
-lr.fit(X_train_scaled,y_train)
-
-rf.fit(X_train,y_train)
-
-xgb.fit(X_train,y_train)
+	models['xgboost'].fit(X_train,y_train)
+	
+	return models
 
 
 # =========================
-# 8. GET PREDICTIONS AND PROBABILITIES
+# 7. THRESHOLD TUNING FUNCTION
 # =========================
 
-y_lr_pred = lr.predict(X_test_scaled)
-y_lr_proba = lr.predict_proba(X_test_scaled)[:,1]
-
-y_rf_pred = rf.predict(X_test)
-y_rf_proba = rf.predict_proba(X_test)[:,1]
-
-y_xgb_pred = xgb.predict(X_test)
-y_xgb_proba = xgb.predict_proba(X_test)[:,1]
-
-
-# =========================
-# 9. BASELINE EVALUATION (THRESHOLD = 0.5)
-# =========================
-
-print("\n========== BASELINE EVALUATION ==========")
-print("\n===== LOGISTIC REGRESSION =====")
-print("Threshold: default")
-print(classification_report(y_test, y_lr_pred))
-
-print("\n===== RANDOM FOREST =====")
-print("Threshold: default")
-print(classification_report(y_test, y_rf_pred))
-
-print("\n===== XGBOOST =====")
-print("Threshold: default")
-print(classification_report(y_test, y_xgb_pred))
-
-
-# =========================
-# 10. THRESHOLD TUNING FUNCTION
-# =========================
-
-def tune_threshold(y_true, y_proba, recall_target=0.8):
+def tune_threshold(y_true, y_proba, recall_target):
 
     precision, recall, thresholds = precision_recall_curve(y_true, y_proba)
 
@@ -192,49 +185,74 @@ def tune_threshold(y_true, y_proba, recall_target=0.8):
 
 
 # =========================
-# 11. THRESHOLD OPTIMISATION (RECALL ≥ 0.8)
+# 8. EVALUATION
 # =========================
 
-RECALL_TARGET = 0.8
+def evaluate(models, X_test, X_test_scaled, y_test):
+	
+	summary = {}
 
-lr_thres, y_lr_pred1 = tune_threshold(y_test, y_lr_proba, RECALL_TARGET)
-rf_thres, y_rf_pred1 = tune_threshold(y_test, y_rf_proba, RECALL_TARGET)
-xgb_thres, y_xgb_pred1 = tune_threshold(y_test, y_xgb_proba, RECALL_TARGET)
+	for name, model in models.items():
+
+		if name == 'logistic_regression':
+			y_pred = model.predict(X_test_scaled)
+			y_proba = model.predict_proba(X_test_scaled)[:,1]
+		
+		else:	
+			y_pred = model.predict(X_test)
+			y_proba = model.predict_proba(X_test)[:,1]	
+
+		best_threshold, y_pred_tune = tune_threshold(y_test, y_proba, RECALL_TARGET)
+		auc = roc_auc_score(y_test, y_proba)
+
+		print(f"\n============ {name.upper()} ============")
+		print("\n========== BASELINE EVALUATION ==========")
+		print("Threshold: default")
+		print(classification_report(y_test, y_pred))
+
+		print(f"\nROC-AUC: {auc:.3f}")
+
+		print("\n========== POST TUNING EVALUATION ==========")
+		print(f"Threshold: {best_threshold:.3f}")
+		print(classification_report(y_test, y_pred_tune))
+		print("============================================")
+
+		report = classification_report(y_test, y_pred_tune, output_dict=True)
+		summary[name] = report['1']['f1-score']
+	
+	best_model = max(summary, key=summary.get)
+
+	print("\n==============================")
+	print("FINAL MODEL SELECTION:", best_model.upper())
+	print("==============================")
+
+	return best_model
 
 
 # =========================
-# 12. POST TUNING EVALUATION
+# 9. MAIN PIPELINE
 # =========================
 
-print("\n========== POST TUNING EVALUATION ==========")
-print("\n===== LOGISTIC REGRESSION =====")
-print("Threshold:", round(lr_thres, 3))
-print(classification_report(y_test, y_lr_pred1))
+def main():
 
-print("\n===== RANDOM FOREST =====")
-print("Threshold:", round(rf_thres, 3))
-print(classification_report(y_test, y_rf_pred1))
+	df = load_data() 
 
-print("\n===== XGBOOST =====")
-print("Threshold:", round(xgb_thres, 3))
-print(classification_report(y_test, y_xgb_pred1))
+	df_model = preprocess(df)
 
+	X_train, X_test, y_train, y_test = split_data(df_model)
 
-# =========================
-# 13. ROC-AUC COMPARISON
-# =========================
+	X_train, X_test, X_train_scaled, X_test_scaled = impute_and_scale(df_model, X_train, X_test)
 
-print("\nROC-AUC SCORES")
-print("Logistic Regression:", round(roc_auc_score(y_test, y_lr_proba),3))
-print("Random Forest:", round(roc_auc_score(y_test, y_rf_proba),3))
-print("XGBoost:", round(roc_auc_score(y_test, y_xgb_proba),3))
+	models = train_models(X_train, X_train_scaled, y_train)
+
+	evaluate(models, X_test, X_test_scaled, y_test)
 
 
 # =========================
-# 14. FINAL MODEL SELECTION
+# 10. ENTRY POINT
 # =========================
 
-print("\nFINAL MODEL SELECTION: RANDOM FOREST")
-print("Reason: best precision-recall tradeoff under recall threshold ≥ 0.8")
+if __name__ == '__main__':
+	main() 
 
 
