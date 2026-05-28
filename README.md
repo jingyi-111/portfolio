@@ -43,16 +43,14 @@ RECALL_TARGET = 0.81
 ## Pipeline Flow
 
 - Data loading  
-- Preprocessing  
+- Data preprocessing (categorical encoding, cleaning, feature grouping)  
 - Train-test split  
-- Imputation
-- Feature scaling (Logistic Regression only) 
-- Model training
-- Prediction & Probabilities
-- Baseline evaluation
+- Missing value imputation  
+- Feature scaling (applied for Logistic Regression only)  
+- Model training (Logistic Regression, Random Forest, XGBoost)  
+- Pre tuning prediction & evaluation (default threshold = 0.5) 
 - Threshold tuning (recall ≥ 0.81)  
 - Post tuning evaluation
-- ROC-AUC comparison
 - Final model selection
 
 
