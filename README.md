@@ -26,7 +26,7 @@ Churn Prediction/
 
 - Install dependencies:
 ```bash
-pip install -r requirements.text
+pip install -r requirements.txt
 ```
 
 - Run full pipeline:
