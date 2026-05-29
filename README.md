@@ -137,6 +137,8 @@ Random Forest was selected as the final model as it achieved the best balance be
 
 Key churn drivers were identified using feature importance from the final Random Forest model, supported by exploratory data analysis insights.
 
+<img width="569" height="414" alt="Screenshot 2026-05-28 at 8 45 38 PM" src="https://github.com/user-attachments/assets/73cdef8e-0c7e-400b-b7d4-6762c2cc796c" /><br>
+
 These drivers can be grouped into behavioural and operational factors:
 
 ### Behavioural Drivers
