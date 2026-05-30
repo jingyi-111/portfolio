@@ -139,17 +139,13 @@ Key churn drivers were identified using feature importance from the final Random
 
 <img width="569" height="414" alt="Screenshot 2026-05-28 at 8 45 38 PM" src="https://github.com/user-attachments/assets/73cdef8e-0c7e-400b-b7d4-6762c2cc796c" /><br>
 
-These drivers can be grouped into behavioural and operational factors:
+Churn is primarily driven by a combination of behavioural engagement, customer experience, and operational factors.
 
-### Behavioural Drivers
-- **Tenure**: Approximately 50% of users with tenure of 1 month or below exhibit high churn risk, indicating weaker retention among new users and highlighting early lifecycle engagement gaps
-- **Cashback Amount**: Users with cashback ≥ 150 show ~50% lower churn rate compared to lower cashback users, suggesting a strong association between incentive engagement and retention
-- **Complaint Behaviour**: Users with complaints show approximately 3x higher churn risk, indicating product & service experience as a key retention factor
-- **Days Since Last Order**: 37% of churned users had their last order within 0–1 days prior to churn, suggesting churn can occur shortly after recent engagement rather than only after long inactivity
+**Behavioural factors** such as low tenure, low cashback engagement, and recent order activity indicate that churn is concentrated among early-stage and low-engagement users.
 
-### Operational Drivers
-- **Warehouse-to-Home Distance**: Churn risk is higher in the 20-30km range, suggesting logistics factors may be associated with user retention
+**Experience-related signals**, particularly customer complaints, are strongly associated with higher churn risk, highlighting product or service quality as a key retention lever.
 
+**Operational factors**, including warehouse-to-home distance, suggest that logistics experience may also influence user retention in certain regions.
 
 ## Recommendations
 
