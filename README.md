@@ -151,8 +151,8 @@ Churn is primarily driven by a combination of behavioural engagement, customer e
 
 - Strengthen early lifecycle engagement by targeting new users within the first month of sign-up with personalised communications based on purchase preference to improve activation and retention
 
-- Improve post-purchase experience by sending follow-up communications such as product usage guidance and support information to help users better navigate issues, potentially reducing complaint-related churn risk
+- Improve post-purchase experience by providing users with product usage guidance and support information to reduce friction and minimise complaint-driven churn
 
-- Optimise incentive strategy by targeting high churn-risk users with tailored cashback campaigns to encourage repeat engagement and improve retention
+- Optimise incentive strategy by deploying targeted cashback campaigns for high churn-risk users to encourage repeat engagement and improve retention
 
-- Monitor and improve delivery experience in mid-distance zones (approximately 20–30km from warehouse) where higher churn risk is observed to better understand and address potential service friction
+- Monitor and improve delivery experience in mid-distance zones (approximately 20–30km from warehouse) to better understand and address potential service-related churn drivers
